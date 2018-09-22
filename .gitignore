@@ -1,0 +1,13 @@
+**/*.ipynb_checkpoints/
+.ipynb_checkpoints
+
+dcgan/bedroom_train_lmdb/
+dcgan/bedroom_val_lmdb/
+dcgan/cifar-10-batches-py/
+dcgan/_cache_._bedroom_train_lmdb
+
+Foolbox
+
+
+*.pyc
+*.pth

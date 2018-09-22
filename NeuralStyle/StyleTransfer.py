@@ -88,7 +88,7 @@ def image_loader(image_name):
 
 # load images
 style_img   = image_loader(os.path.join(ROOT, 'styles', style_img_name + '.jpg') )
-content_img = image_loader(os.path.join(ROOT, 'photos', content_img_name + '.jpg') )
+content_img = image_loader(os.path.join(ROOT, 'photos_originals', content_img_name + '.jpg') )
 
 
 # vgg instantiation and normalization
