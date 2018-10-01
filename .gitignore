@@ -1,6 +1,9 @@
 **/*.ipynb_checkpoints/
 .ipynb_checkpoints
 
+**/results/
+**/photos_originals/
+
 dcgan/bedroom_train_lmdb/
 dcgan/bedroom_val_lmdb/
 dcgan/cifar-10-batches-py/

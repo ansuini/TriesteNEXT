@@ -19,6 +19,7 @@ import torchvision.models as models
 import copy
 import scipy.misc
 from PIL import Image
+import datetime
 
 ROOT = '/home/ansuini/repos/TriesteNEXT/NeuralStyle'
 
@@ -45,7 +46,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 imsize = 512 if torch.cuda.is_available() else 128  # use small size if no gpu
 
 loader = transforms.Compose([
-    transforms.Resize(imsize),  # scale imported image
+    transforms.Resize(imsize,Image.LANCZOS),  # scale imported image
     transforms.ToTensor()])     # transform it into a torch tensor
 
 def crop(image): 
@@ -54,7 +55,7 @@ def crop(image):
     forwarded to the network
     '''
     w,h = image.size
-    #print('Width : {} Height : {}'.format(  w, h ) )
+    print('Original image size : Width {} Height {}'.format(  w, h ) )
     if w == h:
         cropped = image
     if w > h:
@@ -69,7 +70,7 @@ def crop(image):
         #print('Offset : {}'.format( offset ) )
         cropped = image.crop((0,  offset, w, h - offset))
 
-    #print('Size cropped image : {}'.format( cropped.size ) )              
+    print('Cropped image : {}'.format( cropped.size ) )              
     return cropped
 
                              
@@ -80,9 +81,13 @@ def image_loader(image_name):
     image = Image.open(image_name)
     #print(image.size)
     image = crop(image)
-    #print(image.size)
+    #print('Size image after cropping : {}'.format(image.size()) )
     image = loader(image).unsqueeze(0)
-    #print(image.size())    
+    print('Size image after resizing : {}'.format(image.size()) )
+    # final adjustment
+    if image.size()[2] != image.size()[3]:
+        minimum = np.min([ image.size()[2], image.size()[3] ] )
+        image = image[:,:,0:minimum,0:minimum]
     return image.to(device, torch.float)
 
 
@@ -325,12 +330,12 @@ out *= 255
 
 index = 0
 dirname = content_img_name
-if not os.path.exists(os.path.join(ROOT, 'results', dirname)):
-    os.mkdir(os.path.join(ROOT, 'results', dirname))
+if not os.path.exists(os.path.join(ROOT, 'results', datetime.date.today().strftime("%d"), dirname)):
+    os.mkdir(os.path.join(ROOT, 'results',datetime.date.today().strftime("%d"), dirname))
                                    
-while os.path.exists(os.path.join(ROOT, 'results', dirname,  style_img_name + '_' + str(index) + '.jpg') ):
+while os.path.exists(os.path.join(ROOT, 'results', datetime.date.today().strftime("%d"), dirname,  style_img_name + '_' + str(index) + '.jpg') ):
     index += 1
-scipy.misc.toimage(out, cmin=0.0, cmax=255.0).save(os.path.join(ROOT, 'results', dirname, style_img_name + '_' + str(index) +'.jpg') )
+scipy.misc.toimage(out, cmin=0.0, cmax=255.0).save(os.path.join(ROOT, 'results', datetime.date.today().strftime("%d"), dirname, style_img_name + '_' + str(index) +'.jpg') )
 
 # save current result in results folder (this is always overwritten)
-scipy.misc.toimage(out, cmin=0.0, cmax=255.0).save(os.path.join(ROOT, 'results', 'current.jpg') )
+#scipy.misc.toimage(out, cmin=0.0, cmax=255.0).save(os.path.join(ROOT, 'results', 'current.jpg') )
